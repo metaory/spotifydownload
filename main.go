@@ -30,6 +30,10 @@ func init() {
 }
 
 func main() {
+	if os.Getenv("SPOTIFY_TOKEN") == "" {
+		fmt.Fprintln(os.Stderr, "Error: SPOTIFY_TOKEN environment variable is required. See README for instructions.")
+		os.Exit(1)
+	}
 	var playlistURL string
 	flag.StringVar(&playlistURL, "playlist", "", "The Spotify playlist URL link")
 	flag.BoolVar(&debug, "debug", false, "Debug mode")

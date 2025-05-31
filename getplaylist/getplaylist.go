@@ -3,8 +3,8 @@ package getplaylist
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -187,34 +187,13 @@ func GetTracks(spotifyURL string) (playlistName string, tracks []Track, err erro
 }
 
 func getAccessToken(spotifyURL string) (accessToken string, err error) {
-	req, err := http.NewRequest("GET", spotifyURL, nil)
-	if err != nil {
-		log.Error(err)
+	// Require SPOTIFY_TOKEN env var
+	token := os.Getenv("SPOTIFY_TOKEN")
+	if token == "" {
+		err = fmt.Errorf("SPOTIFY_TOKEN environment variable is required. See README for instructions to extract your token from Spotify web player (Network tab, any XHR request, look for 'authorization' header)")
 		return
 	}
-
-	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0")
-	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
-	req.Header.Set("Accept-Language", "en-US,en;q=0.5")
-	req.Header.Set("Dnt", "1")
-	req.Header.Set("Connection", "keep-alive")
-	req.Header.Set("Cookie", "sp_ab=%7B%7D; sp_landing=http%3A%2F%2Fopen.spotify.com%2Fplaylist%2F37i9dQZF1EtsXGZhBtSWWl; sp_t=c695ff90921aafb17baa61ea6c01c2f8")
-	req.Header.Set("Upgrade-Insecure-Requests", "1")
-	req.Header.Set("Cache-Control", "max-age=0")
-
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	defer resp.Body.Close()
-
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-	accessToken = getStringInBetween(string(bodyBytes), `"accessToken":"`, `"`)
-	log.Tracef("got access token: %s", accessToken)
-
-	if len(accessToken) < 3 {
-		err = fmt.Errorf("got no access token")
-	}
+	log.Tracef("using SPOTIFY_TOKEN from environment")
+	accessToken = token
 	return
 }

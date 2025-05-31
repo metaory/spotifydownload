@@ -62,6 +62,34 @@ Now you can easily schedule this to run using `crontab`, just edit it with `cron
 
 which will execute it every 7 days so that you will never lose any songs in your Release Radar or Discover Weekly.
 
+# Token Usage
+
+**A Spotify access token is required.**
+
+To use this tool, you must set the `SPOTIFY_TOKEN` environment variable with your own Spotify Bearer token. The app will not function without it.
+
+How to extract your token:
+
+1. Open [Spotify Web Player](https://open.spotify.com/) in your browser and log in.
+2. Open Developer Tools (usually F12 or right-click → Inspect).
+3. Go to the Network tab.
+4. Play any song or interact with the page.
+5. Click on any XHR request in the list (e.g. `playlist`, `search`, etc).
+6. In the request headers, look for the `authorization` header. It will look like:
+   
+   ```
+   authorization: Bearer BQ...your_token_here...
+   ```
+7. Copy the entire token (everything after `Bearer `).
+8. Set it in your shell before running the app:
+
+```bash
+export SPOTIFY_TOKEN=your_token_here
+spotifydownload -playlist PLAYLIST_URL
+```
+
+If the token expires, repeat the steps above to get a new one.
+
 ## Contributing
 
 Pull requests are welcome. Feel free to...
